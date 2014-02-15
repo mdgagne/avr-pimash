@@ -31,15 +31,19 @@ static void ioinit (void) {
 int main (void) {
 	ioinit();
 
+	// Wait for a 'g' and respond with 'test'
+	unsigned char r = '\0';
 	while (1) {
-		_delay_ms(1000);
-		tx_byte('t');
-		tx_byte('e');
-		tx_byte('s');
-		tx_byte('t');
-		tx_byte('\r');
-		tx_byte('\n');
-		}
+		r = rx_byteNB ();
+		if (r == 'g') {
+			tx_byte ('t');
+			tx_byte ('e');
+			tx_byte ('s');
+			tx_byte ('t');
+			tx_byte('\r');
+			tx_byte('\n');
+			}
+	}
 
 	
     return (0);
