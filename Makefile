@@ -2,7 +2,7 @@
 #  Makefile for ATmega328p on Gertboard
 # ======================================================================
 TARGET = pimash
-SRC = pimash.c
+SRC = uart.c pimash.c
 
 # ======================================================================
 # You shouldn't have to edit below this line
@@ -12,7 +12,8 @@ CC = avr-gcc
 OBJCOPY = avr-objcopy
 
 MCU = atmega328p
-CFLAGS = -Wall -Os -std=gnu99 -mmcu=$(MCU) -I.
+F_CPU = 12000000
+CFLAGS = -Wall -Os -std=gnu99 -mmcu=$(MCU) -I. -DF_CPU=$(F_CPU)
 
 AVRDUDE_PROGRAMMER = gpio
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
