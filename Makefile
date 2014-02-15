@@ -2,7 +2,7 @@
 #  Makefile for ATmega328p on Gertboard
 # ======================================================================
 TARGET = pimash
-SRC = uart.c pimash.c
+SRC = uart.c pimash.c 1wire.c
 
 # ======================================================================
 # You shouldn't have to edit below this line

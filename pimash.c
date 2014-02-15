@@ -13,14 +13,7 @@
 #include <util/delay.h>
 
 #include "uart.h"
-
-// intialize data direction and call other intialization functions  	
-static void ioinit (void) {
-	uart_115200 ();		
-	}
-
-// intialize input capture
-//void IC_init(void);
+#include "1wire.h"
 
 // FIXME
 // Need to:
@@ -29,22 +22,21 @@ static void ioinit (void) {
 //	3) Read SF800 Flow Meter
 //	4) Look for SP and Kp, Ki, Kd parameters from UART
 int main (void) {
-	ioinit();
+	// Init uart
+	uart_115200();
 
-	// Wait for a 'g' and respond with 'test'
-	unsigned char r = '\0';
+	// Init the probe every 5 second, report:
+	// 'P': Present
+	// 'Q': Non Present (Quiet)
 	while (1) {
-		r = rx_byteNB ();
-		if (r == 'g') {
-			tx_byte ('t');
-			tx_byte ('e');
-			tx_byte ('s');
-			tx_byte ('t');
-			tx_byte('\r');
-			tx_byte('\n');
+		_delay_ms(5000);
+		if (initProbe ()) {
+			tx_byte ('P');
 			}
-	}
-
+		else {
+			tx_byte ('Q');
+			}
+		}
 	
     return (0);
 	}

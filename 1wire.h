@@ -1,3 +1,9 @@
+/*
+ ************************************************************
+ * PiMash - 
+ * 	DS19B20 interface API
+ ************************************************************
+ */
 #ifndef __ONEWIRE__
 #define __ONEWIRE__
 
@@ -21,10 +27,10 @@
 // NOTE: Assumes a single DS19B20 is on the bus and it is powered with external Vcc
 
 // Sends reset pulse and waits for presence pulse from DS19B20
-bool initCom ();
+unsigned char initProbe ();
 
 // Issues a convert command to all DS19B20s on the bus
-bool startConvert ();
+unsigned char startConvert ();
 
 // Reads the first 3 bytes of the scratchpad in 
 // order to get the Th and Tl from the DS18B20
