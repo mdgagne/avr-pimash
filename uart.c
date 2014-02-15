@@ -9,8 +9,8 @@
 #include "uart.h"
 
 // *************************************************************
-void uart_9600 () {
-	#define BAUD 38400
+void uart_115200 () {
+	#define BAUD 115200
 	#include <util/setbaud.h>
 
 	// set baud rate

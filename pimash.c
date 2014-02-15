@@ -16,7 +16,7 @@
 
 // intialize data direction and call other intialization functions  	
 static void ioinit (void) {
-	uart_9600 ();		
+	uart_115200 ();		
 	}
 
 // intialize input capture
@@ -32,7 +32,7 @@ int main (void) {
 	ioinit();
 
 	while (1) {
-		_delay_ms(10*1000);
+		_delay_ms(1000);
 		tx_byte('t');
 		tx_byte('e');
 		tx_byte('s');

@@ -8,7 +8,7 @@
 #ifndef __UART__
 #define __UART__
 // intialize transmit/receive for 1200 baud 2 stop bits 8 data bits 
-void uart_9600();
+void uart_115200();
 
 // recieve  single character over serial port
 unsigned char rx_byte(void);
