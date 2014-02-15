@@ -20,6 +20,9 @@ unsigned char rx_byteNB(void);
 void tx_byte(unsigned char data);
 
 // converts integer to string, appends \r and \n transmits over serial
-void tx_inttext(int num);
+void tx_inttext(unsigned int num);
+
+// prints string 
+void tx_text(char* string);
 
 #endif //__UART__

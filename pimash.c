@@ -27,17 +27,22 @@ int main (void) {
 	PORTC = 0;
 	DDRC = 0;
 
-	// Init the probe every 5 second, report:
-	// 'P': Present
-	// 'Q': Non Present (Quiet)
+	// Init the probe
+	if (0 == init_probe ())
+		tx_text ("probe init SUCCESS");
+	else
+		tx_text ("probe init FAIL");
+
+	// Read and report the temp every 1 second	
 	while (1) {
-		_delay_ms(5000);
-		if (0 == initProbe ()) {
-			tx_byte ('P');
-			}
-		else {
-			tx_byte ('Q');
-			}
+		start_convert ();
+		_delay_ms (1000);
+		unsigned int temp = get_temp ();
+		
+		if (temp)
+			tx_inttext (temp);
+		else
+			tx_text ("failed");
 		}
 	
     return (0);

@@ -58,7 +58,7 @@ void tx_byte(unsigned char data) {
 	}
 
 // *************************************************************
-void tx_inttext(int num) {
+void tx_inttext(unsigned int num) {
 	int i ;
 	char string[7];
 	
@@ -75,4 +75,14 @@ void tx_inttext(int num) {
 			tx_byte('\r');
 			tx_byte('\n');
 		}
+	}
+
+// *************************************************************
+void tx_text(char* string) {
+	while (0 != string) {
+		tx_byte (*string);
+		}
+
+	tx_byte('\r');
+	tx_byte('\n');
 	}
