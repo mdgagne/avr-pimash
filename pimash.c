@@ -24,13 +24,15 @@
 int main (void) {
 	// Init uart
 	uart_115200();
+	PORTC = 0;
+	DDRC = 0;
 
 	// Init the probe every 5 second, report:
 	// 'P': Present
 	// 'Q': Non Present (Quiet)
 	while (1) {
 		_delay_ms(5000);
-		if (initProbe ()) {
+		if (0 == initProbe ()) {
 			tx_byte ('P');
 			}
 		else {

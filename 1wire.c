@@ -15,33 +15,49 @@
 #define T_IN	PINC
 #define T_OUT	PORTC
 #define T_DDR	DDRC
-
-#define SETPIN(val) (val) ? (T_OUT |= (1<<T_PIN)) : (T_OUT &= ~(1<<T_PIN))
-#define SETDIR(in)  (in) ? (T_DDR |= 1<<T_PIN) : (T_DDR &= ~(1<<T_PIN))
+#define OUT 1
+#define IN 0
+#define ON 1
+#define OFF 0
 #endif
+
+static void  SETPIN(unsigned char on) {
+	if (on) 
+		T_OUT |= (1<<T_PIN);
+	else
+		T_OUT &= ~(1<<T_PIN);
+	}
+
+static void SETDIR(unsigned char out) {
+	if (out)
+		T_DDR |= (1<<T_PIN);
+	else
+		T_DDR &= ~(1<<T_PIN);
+	}
 
 
 // ********************************************************
-// Returns true if a presence ack is received
+// Returns 0  if a presence ack is received
 unsigned char initProbe () {
-	unsigned char result = 0;
+	unsigned char err = 1;
+
 	// Set as output, drive low for 480 us
-	SETPIN(1); 
-	SETDIR(1);
+	SETPIN (OFF); 
+	SETDIR (OUT);
 	_delay_us (480);
 
 	// Set as input, wait at least 60 us and check the input state
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		SETDIR(0);	
+		SETDIR(IN);	
 		_delay_us (70);
-		result = T_IN & (1 << T_PIN);
+		err = T_IN & (1 << T_PIN);
 		}
-
-	// Wait at most another 240 - 60 us and check input state again
-	// if the pin is still high we've received a presense pulse
-	result = 0;
-	_delay_us (240 - 70);
-	result = T_IN & (1 << T_PIN);
 	
-	return result;
+	// Wait another 480 - 70 us, line should be high by pull-up resistor
+	_delay_us (480 - 70);
+	if (0 == (T_IN & (1 << T_PIN))) {
+		err = 1;
+		}
+	
+	return err;
 	}
