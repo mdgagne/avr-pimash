@@ -7,6 +7,7 @@
 #include <avr/io.h>
 #include <util/atomic.h>
 #include <util/delay.h>
+#include <util/crc16.h>
 #include "1wire.h"
 
 // DS18B20 supported Commands
@@ -34,6 +35,17 @@
 #define ON 1
 #define OFF 0
 
+// Scratch pad bytes
+#define T_LSB 	0
+#define T_MSB 	1
+#define T_H		2
+#define T_L		3
+#define CONF	4
+#define RES1	5
+#define RES2	6
+#define RES3	7
+#define CRC		8
+
 // ********************************************************
 static void SETPIN(unsigned char on) {
 	if (on) 
@@ -50,6 +62,15 @@ static void SETDIR(unsigned char out) {
 		T_DDR &= ~(1<<T_PIN);
 	}
 
+// ********************************************************
+static int check_crc (unsigned char *b, int length) {
+	unsigned char crc = 0, i;
+
+	for (i = 0; i < length; ++i)
+		crc = _crc_ibutton_update (crc, b[i]);
+
+	return crc; // must be 0
+	}
 // ********************************************************
 static unsigned char send_bit (unsigned char bit) {
 	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
@@ -92,15 +113,8 @@ static unsigned int read_byte (void) {
 }
 
 // ********************************************************
-static void send_cmd (unsigned char cmd) {
-	// Detect probe presense	 
-	send_byte (SKIPROM);			// to all devices
-	send_byte (cmd);
-	}
-
-// ********************************************************
 // Returns 0  if a presence ack is received
-unsigned char init_probe () {
+static unsigned char init_probe () {
 	unsigned char err = 1;
 
 	// Set as output, drive low for 480 us
@@ -125,20 +139,47 @@ unsigned char init_probe () {
 	}
 
 // ********************************************************
-void start_convert () {
-	send_cmd (CONVERT);
+// Returns non-zero if error occurs
+static unsigned char send_cmd (unsigned char cmd) {
+	// Detect probe presense	 
+	unsigned char err = init_probe ();
+	if (!err) {
+		send_byte (SKIPROM);			// to all devices
+		send_byte (cmd);
+		}
+	
+	return (err);
+	}
+
+// ********************************************************
+unsigned int  start_convert () {
+	return (send_cmd (CONVERT));
 	}
 
 // ********************************************************
 unsigned int get_temp () {
+	unsigned char sp[9];
+	unsigned int temp = -1;
 	// Issue the read command
 	send_cmd (READSCH); 
-	// Read in the low byte
-	unsigned int temp = read_byte ();
+	
+	// Read in the scratch pad
+	sp[T_LSB] = read_byte ();
+	sp[T_MSB] = read_byte ();
+	sp[T_H] = read_byte ();
+	sp[T_L] = read_byte ();
+	sp[CONF] = read_byte ();
+	sp[RES1] = read_byte ();
+	sp[RES2] = read_byte ();
+	sp[RES3] = read_byte ();
+	sp[CRC] = read_byte ();
 
-	// Read in the high byte
-	temp |= read_byte () << 8;
+	// Perform the CRC
+	if (sp[CRC] == check_crc (sp, 8)) {
+		// Read in the high byte
+		temp = sp[T_LSB];
+		temp |= (unsigned int)sp[T_MSB] << 8;
+		}
 
-	// assume 12-bit (power-on state)
-	return (temp <<= 3);
+	return (temp);
 	}

@@ -10,6 +10,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>	
 #include <stdlib.h>
+#include <stdio.h>
 #include <util/delay.h>
 
 #include "uart.h"
@@ -26,23 +27,30 @@ int main (void) {
 	uart_115200();
 	PORTC = 0;
 	DDRC = 0;
+	char str[30];
 
-	// Init the probe
-	if (0 == init_probe ())
-		tx_text ("probe init SUCCESS");
-	else
-		tx_text ("probe init FAIL");
 
-	// Read and report the temp every 1 second	
+	// Read and report the temp	
 	while (1) {
-		start_convert ();
-		_delay_ms (1000);
+		tx_text ("Reading temp");
+		if (0 != start_convert ()) {
+			tx_text ("Failed to start conversion");
+			_delay_ms (1000);
+			continue;
+			}
+
+		_delay_ms (1000);	
 		unsigned int temp = get_temp ();
 		
-		if (temp)
-			tx_inttext (temp);
+		tx_text("temp:");
+		if (temp) {
+			sprintf (str, "%04X hex", temp);
+			tx_text(str);
+			sprintf (str, "%4d.%01d c\n", temp >> 4, (temp << 12) / 6553);
+			tx_text(str);
+			}
 		else
-			tx_text ("failed");
+			tx_text ("failed");	
 		}
 	
     return (0);

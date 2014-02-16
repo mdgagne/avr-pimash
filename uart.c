@@ -79,8 +79,9 @@ void tx_inttext(unsigned int num) {
 
 // *************************************************************
 void tx_text(char* string) {
-	while (0 != string) {
+	while (0 != *string) {
 		tx_byte (*string);
+		++string;
 		}
 
 	tx_byte('\r');
