@@ -35,13 +35,17 @@ void ioinit () {
 int main (void) {
 	char str[30];
 
+	ioinit ();
 	// Read and report the temp	
+	clear_flwcount ();
 	while (1) {
-		clear_flwcount ();
-		_delay_ms (1000);
 		unsigned int count = get_flwcount ();
 		sprintf (str, "count: %u", count);
 		tx_text (str);
+		_delay_ms (1000);
+		}
+
+	//while (1) {
 		//tx_text ("Reading temp");
 		//if (0 != start_convert ()) {
 		//	tx_text ("Failed to start conversion");
@@ -61,7 +65,7 @@ int main (void) {
 		//	}
 		//else
 		//	tx_text ("failed");	
-		}
+		//}
 	
     return (0);
 	}
