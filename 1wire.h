@@ -8,6 +8,9 @@
  */
 #ifndef __ONEWIRE__
 #define __ONEWIRE__
+// Initialize IO register and data direction
+void init_1wire ();
+
 // Starts a temp conversion
 unsigned int start_convert ();
 

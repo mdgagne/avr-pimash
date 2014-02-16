@@ -152,6 +152,12 @@ static unsigned char send_cmd (unsigned char cmd) {
 	}
 
 // ********************************************************
+void init_1wire () {
+	T_OUT = 0;
+	T_DDR = 0;
+	}
+
+// ********************************************************
 unsigned int  start_convert () {
 	return (send_cmd (CONVERT));
 	}
