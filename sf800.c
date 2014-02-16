@@ -12,14 +12,16 @@
 
 // ********************************************************
 void init_sf800 () {
-	TCCR1A = 0;
-	TCCR1C = 0;
 	PORTD  = 0;
-	DDRD = 0;
+	DDRD &= ~(1 << PD6);
 
 	// External clock on falling  edge, noise cancelling
-	TCCR1B = (1 << CS11) | (1 << CS12);
-	
+	TCCR1A = 0;
+	// Clock on T1 (PD6) on falling edge
+	TCCR1B |= (1 << CS11) | (1 << CS12);
+	TCCR1C = 0;
+
+	// No interrupts
 	TIMSK1 = 0;
 	}
 
