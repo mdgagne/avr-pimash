@@ -33,18 +33,21 @@ void ioinit () {
 //	3) Read SF800 Flow Meter
 //	4) Look for SP and Kp, Ki, Kd parameters from UART
 int main (void) {
-	char str[30];
-
 	ioinit ();
-	// Read and report the temp	
-	clear_flwcount ();
+	
 	while (1) {
-		unsigned int count = get_flwcount ();
-		sprintf (str, "count: %u", count);
-		tx_text (str);
-		_delay_ms (1000);
+		// The the overflow timer do its thing...
 		}
+	// Read and report the temp	
+	//clear_flwcount ();
+	//while (1) {
+	//	unsigned int count = get_flwcount ();
+	//	sprintf (str, "count: %u", count);
+	//	tx_text (str);
+	//	_delay_ms (1000);
+	//	}
 
+	//char str[30];
 	//while (1) {
 		//tx_text ("Reading temp");
 		//if (0 != start_convert ()) {

@@ -12,4 +12,8 @@
 void init_sf800 ();
 void clear_flwcount ();
 unsigned int get_flwcount ();
+
+// Start/Stop the sampling the flow rate
+void start_flwtimer ();
+void stop_flwtimer ();
 #endif //__SF800__
