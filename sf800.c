@@ -11,14 +11,21 @@
 #include "sf800.h"
 #include "uart.h"
 
-static int flwtimerof_count = 0;
+// SF800 k factor is 5600 pulse/liter. To report in liter/min:
+// pulses/sec * 1/5600 liter/pulses * 60 sec/min = liter/min
+#define K_FACTOR 60.0f / 5600.0f
+
+// timer variables
+int flwtimerof_count = 0;
+int flwcount =0;
 
 // ********************************************************
 void start_flwtimer () {
+	TCNT0 = 0;
 	// External clock on falling  edge, noise cancelling
 	TCCR0A = 0;
 	// Clock on T1 (PD6) on falling edge
-	TCCR0B |= (1 << CS00) | (1 << CS02);
+	TCCR0B |= (1 << CS02) | (1 << CS00);
 
 	// No interrupts
 	TIMSK0 |= (1 << TOIE0);
@@ -31,8 +38,14 @@ void stop_flwtimer () {
 
 // ********************************************************
 ISR (TIMER0_OVF_vect) {
-	if (flwtimerof_count++ == 46)
-		tx_text("Overflow...");
+	// Capture pulses every 1 second and reset counter 1
+	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+		if (flwtimerof_count++ == 46) {
+			flwtimerof_count = 0;
+			flwcount = TCNT1;
+			TCNT1 = 0;
+			}
+		}
 	}
 
 // ********************************************************
@@ -51,18 +64,8 @@ void init_sf800 () {
 	}
 
 // ********************************************************
-void clear_flwcount () {
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		TCNT1 = 0;
-		}
-	}
-
-// ********************************************************
-unsigned int get_flwcount () {
-	unsigned int tcnt1 = 0;
-	ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-		tcnt1 = TCNT1;
-		}
-
-	return tcnt1;
+double get_flwrate () {
+	double flowrate = flwcount;
+	flowrate *= K_FACTOR;
+	return flowrate;
 	}

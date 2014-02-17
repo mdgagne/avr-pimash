@@ -10,8 +10,7 @@
 
 // Init PB0 as input capture pin used to measure flow with SF800
 void init_sf800 ();
-void clear_flwcount ();
-unsigned int get_flwcount ();
+double get_flwrate ();
 
 // Start/Stop the sampling the flow rate
 void start_flwtimer ();

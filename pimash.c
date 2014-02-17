@@ -34,11 +34,19 @@ void ioinit () {
 //	4) Look for SP and Kp, Ki, Kd parameters from UART
 int main (void) {
 	ioinit ();
-	
+	start_flwtimer ();
+	sei ();
+
+	// Every 10 second output the flow rate
+	char str[16];
 	while (1) {
-		// The the overflow timer do its thing...
+		_delay_ms(1000);
+		tx_text("flowrate (l/min):");
+		sprintf (str, "%f", (double)get_flwrate ());
+		tx_text(str);
 		}
-	// Read and report the temp	
+	
+// Read and report the temp	
 	//clear_flwcount ();
 	//while (1) {
 	//	unsigned int count = get_flwcount ();
